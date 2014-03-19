@@ -39,7 +39,7 @@ extern PyObject *zbar_exc[ZBAR_ERR_NUM];
 extern PyObject *zbarErr_Set(PyObject *self);
 
 typedef struct {
-    PyIntObject val;            /* integer value is super type */
+    PyObject *val;            /* integer value is super type */
     PyObject *name;             /* associated string name */
 } zbarEnumItem;
 

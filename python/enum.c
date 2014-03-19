@@ -43,7 +43,7 @@ enumitem_new (PyTypeObject *type,
     if(!self)
         return(NULL);
 
-    self->val.ob_ival = val;
+    self->val = PyLong_FromLong(val);
     self->name = name;
     return(self);
 }
@@ -76,17 +76,16 @@ enumitem_repr (zbarEnumItem *self)
     PyObject *name = PyObject_Repr(self->name);
     if(!name)
         return(NULL);
-    char *namestr = PyString_AsString(name);
     PyObject *repr =
-        PyString_FromFormat("%s(%ld, %s)",
+        PyUnicode_FromFormat("%s(%ld, %R)",
                             ((PyObject*)self)->ob_type->tp_name,
-                            self->val.ob_ival, namestr);
+                            PyLong_AsLong(self->val), self->name);
     Py_DECREF(name);
     return((PyObject*)repr);
 }
 
 PyTypeObject zbarEnumItem_Type = {
-    PyObject_HEAD_INIT(NULL)
+    PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name        = "zbar.EnumItem",
     .tp_doc         = enumitem_doc,
     .tp_basicsize   = sizeof(zbarEnumItem),
@@ -108,8 +107,8 @@ zbarEnumItem_New (PyObject *byname,
     zbarEnumItem *self = PyObject_New(zbarEnumItem, &zbarEnumItem_Type);
     if(!self)
         return(NULL);
-    self->val.ob_ival = val;
-    self->name = PyString_FromString(name);
+    self->val = PyLong_FromLong(val);
+    self->name = PyUnicode_FromString(name);
     if(!self->name ||
        (byname && PyDict_SetItem(byname, self->name, (PyObject*)self)) ||
        (byvalue && PyDict_SetItem(byvalue, (PyObject*)self, (PyObject*)self))) {
@@ -153,7 +152,7 @@ enum_dealloc (zbarEnum *self)
 }
 
 PyTypeObject zbarEnum_Type = {
-    PyObject_HEAD_INIT(NULL)
+    PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name        = "zbar.Enum",
     .tp_doc         = enum_doc,
     .tp_basicsize   = sizeof(zbarEnum),
@@ -197,7 +196,7 @@ zbarEnumItem*
 zbarEnum_LookupValue (zbarEnum *self,
                       int val)
 {
-    PyObject *key = PyInt_FromLong(val);
+    PyObject *key = PyLong_FromLong(val);
     zbarEnumItem *e = (zbarEnumItem*)PyDict_GetItem(self->byvalue, key);
     if(!e)
         return((zbarEnumItem*)key);
@@ -214,7 +213,7 @@ zbarEnum_SetFromMask (zbarEnum *self,
     PyObject *key, *item;
     Py_ssize_t i = 0;
     while(PyDict_Next(self->byvalue, &i, &key, &item)) {
-        int val = PyInt_AsLong(item);
+        int val = PyLong_AsLong(item);
         if(val < sizeof(mask) * 8 && ((mask >> val) & 1))
             PySet_Add(result, item);
     }

@@ -160,7 +160,7 @@ image_get_size (zbarImage *self,
 {
     unsigned int w, h;
     zbar_image_get_size(self->zimg, &w, &h);
-    return(PyTuple_Pack(2, PyInt_FromLong(w), PyInt_FromLong(h)));
+    return(PyTuple_Pack(2, PyLong_FromLong(w), PyLong_FromLong(h)));
 }
 
 static int
@@ -191,8 +191,8 @@ image_get_crop (zbarImage *self,
 {
     unsigned int x, y, w, h;
     zbar_image_get_crop(self->zimg, &x, &y, &w, &h);
-    return(PyTuple_Pack(4, PyInt_FromLong(x), PyInt_FromLong(y),
-                        PyInt_FromLong(w), PyInt_FromLong(h)));
+    return(PyTuple_Pack(4, PyLong_FromLong(x), PyLong_FromLong(y),
+                        PyLong_FromLong(w), PyLong_FromLong(h)));
 }
 
 static int
@@ -243,7 +243,7 @@ image_get_int (zbarImage *self,
     default:
         assert(0);
     }
-    return(PyInt_FromLong(val));
+    return(PyLong_FromLong(val));
 }
 
 static int
@@ -251,7 +251,7 @@ image_set_int (zbarImage *self,
                PyObject *value,
                void *closure)
 {
-    unsigned int tmp, val = PyInt_AsSsize_t(value);
+    unsigned int tmp, val = PyLong_AsSsize_t(value);
     if(val == -1 && PyErr_Occurred()) {
         PyErr_SetString(PyExc_TypeError, "expecting an integer");
         return(-1);

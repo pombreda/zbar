@@ -88,7 +88,7 @@ scanner_get_width (zbarScanner *self,
                    void *closure)
 {
     unsigned int width = zbar_scanner_get_width(self->zscn);
-    return(PyInt_FromLong(width));
+    return(PyLong_FromLong(width));
 }
 
 static zbarEnumItem*

@@ -105,7 +105,7 @@ symbol_get_long (zbarSymbol *self,
         val = zbar_symbol_get_quality(self->zsym);
     else
         val = zbar_symbol_get_count(self->zsym);
-    return(PyInt_FromLong(val));
+    return(PyLong_FromLong(val));
 }
 
 static PyObject*
@@ -135,8 +135,8 @@ symbol_get_location (zbarSymbol *self,
         unsigned int i;
         for(i = 0; i < n; i++) {
             PyObject *x, *y;
-            x = PyInt_FromLong(zbar_symbol_get_loc_x(self->zsym, i));
-            y = PyInt_FromLong(zbar_symbol_get_loc_y(self->zsym, i));
+            x = PyLong_FromLong(zbar_symbol_get_loc_x(self->zsym, i));
+            y = PyLong_FromLong(zbar_symbol_get_loc_y(self->zsym, i));
             PyTuple_SET_ITEM(self->loc, i, PyTuple_Pack(2, x, y));
         }
     }
@@ -198,7 +198,7 @@ zbarSymbol_FromSymbol (const zbar_symbol_t *zsym)
 zbarEnumItem*
 zbarSymbol_LookupEnum (zbar_symbol_type_t type)
 {
-    PyObject *key = PyInt_FromLong(type);
+    PyObject *key = PyLong_FromLong(type);
     zbarEnumItem *e = (zbarEnumItem*)PyDict_GetItem(symbol_enum, key);
     if(!e) 
         return((zbarEnumItem*)key);

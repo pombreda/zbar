@@ -3,7 +3,7 @@ AC_PREREQ([2.61])
 AC_INIT([zbar], [0.10], [spadix@users.sourceforge.net])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config)
-AM_INIT_AUTOMAKE([1.10 -Wall -Werror foreign subdir-objects std-options dist-bzip2])
+AM_INIT_AUTOMAKE([1.10 -Wall foreign subdir-objects std-options dist-bzip2])
 AC_CONFIG_HEADERS([include/config.h])
 AC_CONFIG_SRCDIR(zbar/scanner.c)
 LT_PREREQ([2.2])
@@ -439,7 +439,7 @@ AS_IF([test "x$with_python" != "xno"],
      [PYTHON_CFLAGS=`$PYTHON_CONFIG --cflags`],
      [test -x "$PYTHON-config"],
      [PYTHON_CFLAGS=`$PYTHON-config --cflags`],
-     [PYTHON_CFLAGS=`$PYTHON -c 'import distutils.sysconfig as s; print " ".join(s.get_config_vars("CFLAGS")) + " -I"+s.get_python_inc() + " -I"+s.get_python_inc(plat_specific=True)'`])
+     [PYTHON_CFLAGS=`$PYTHON -c 'import distutils.sysconfig as s; import sys; sys.stdout.write(" ".join(s.get_config_vars("CFLAGS")) + " -I"+s.get_python_inc() + " -I"+s.get_python_inc(plat_specific=True))'`])
 
 dnl check that #include <Python.h> compiles (bug #3092663)
    CPPFLAGS_save="$CPPFLAGS"

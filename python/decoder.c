@@ -132,7 +132,7 @@ static PyObject*
 decoder_get_direction (zbarDecoder *self,
                        void *closure)
 {
-    return(PyInt_FromLong(zbar_decoder_get_direction(self->zdcode)));
+    return(PyLong_FromLong(zbar_decoder_get_direction(self->zdcode)));
 }
 
 static PyGetSetDef decoder_getset[] = {

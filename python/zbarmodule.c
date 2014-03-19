@@ -118,7 +118,7 @@ parse_dimensions (PyObject *seq,
         PyObject *dim = PySequence_GetItem(seq, i);
         if(!dim)
             return(-1);
-        *dims = PyInt_AsSsize_t(dim);
+        *dims = PyLong_AsSsize_t(dim);
         Py_DECREF(dim);
         if(*dims == -1 && PyErr_Occurred())
             return(-1);
@@ -181,11 +181,15 @@ static PyMethodDef zbar_functions[] = {
     { NULL, },
 };
 
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit_zbar(void)
+#else
 PyMODINIT_FUNC
 initzbar (void)
+#endif
 {
     /* initialize types */
-    zbarEnumItem_Type.tp_base = &PyInt_Type;
+    zbarEnumItem_Type.tp_base = &PyLong_Type;
     zbarException_Type.tp_base = (PyTypeObject*)PyExc_Exception;
 
     if(PyType_Ready(&zbarException_Type) < 0 ||
@@ -199,7 +203,7 @@ initzbar (void)
        PyType_Ready(&zbarImageScanner_Type) < 0 ||
        PyType_Ready(&zbarDecoder_Type) < 0 ||
        PyType_Ready(&zbarScanner_Type) < 0)
-        return;
+        return NULL;
 
     /* initialize constant containers */
     config_enum = zbarEnum_New();
@@ -207,7 +211,7 @@ initzbar (void)
     symbol_enum = PyDict_New();
     orient_enum = zbarEnum_New();
     if(!config_enum || !modifier_enum || !symbol_enum || !orient_enum)
-        return;
+        return NULL;
 
     zbar_exc[0] = (PyObject*)&zbarException_Type;
     zbar_exc[ZBAR_ERR_NOMEM] = NULL;
@@ -215,7 +219,7 @@ initzbar (void)
     for(ei = ZBAR_ERR_INTERNAL; ei < ZBAR_ERR_NUM; ei++) {
         zbar_exc[ei] = PyErr_NewException(exc_names[ei], zbar_exc[0], NULL);
         if(!zbar_exc[ei])
-            return;
+            return NULL;
     }
 
     /* internally created/read-only type overrides */
@@ -224,9 +228,20 @@ initzbar (void)
     zbarEnum_Type.tp_setattro = NULL;
 
     /* initialize module */
+#if PY_MAJOR_VERSION >= 3
+    static struct PyModuleDef zbar_moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "zbar",         /* m_name */
+        "",             /* m_doc */
+        -1,             /* m_size */
+        zbar_functions, /* m_methods */
+    };
+    PyObject *mod = PyModule_Create(&zbar_moduledef);
+#else
     PyObject *mod = Py_InitModule("zbar", zbar_functions);
+#endif
     if(!mod)
-        return;
+        return NULL;
 
     /* add types to module */
     PyModule_AddObject(mod, "EnumItem", (PyObject*)&zbarEnumItem_Type);
@@ -265,4 +280,6 @@ initzbar (void)
     for(item = symbol_defs; item->strval; item++)
         zbarEnumItem_New(tp_dict, symbol_enum, item->intval, item->strval);
     symbol_NONE = zbarSymbol_LookupEnum(ZBAR_NONE);
+
+    return mod;
 }

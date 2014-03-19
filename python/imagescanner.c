@@ -157,7 +157,7 @@ imagescanner_scan (zbarImageScanner *self,
         PyErr_Format(PyExc_ValueError, "unsupported image format");
         return(NULL);
     }
-    return(PyInt_FromLong(n));
+    return(PyLong_FromLong(n));
 }
 
 static PyMethodDef imagescanner_methods[] = {
